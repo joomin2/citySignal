@@ -1,65 +1,89 @@
-import Image from "next/image";
+import BottomNav from "@/components/BottomNav";
+import AuthButton from "@/components/AuthButton";
+import CurrentLocation from "@/components/CurrentLocation";
 
-export default function Home() {
+export default function HomePage() {
+  const alerts = [
+    {
+      id: 1,
+      level: 4,
+      title: "선문대 근처 수상한 봉고차 목격",
+      location: "선문대학교 정문 근처",
+      time: "5분 전",
+      emoji: "🚐",
+      bgColor: "bg-red-50",
+      borderColor: "border-red-300",
+      levelColor: "bg-red-500 text-white"
+    },
+    {
+      id: 2,
+      level: 2,
+      title: "이상한 사람이 주변 어슬렁거림",
+      location: "학생식당 뒤편",
+      time: "10분 전",
+      emoji: "⚠️",
+      bgColor: "bg-orange-50",
+      borderColor: "border-orange-300",
+      levelColor: "bg-orange-500 text-white"
+    },
+    {
+      id: 3,
+      level: 1,
+      title: "가로등 불이 꺼짐",
+      location: "중앙도서관 앞",
+      time: "15분 전",
+      emoji: "💡",
+      bgColor: "bg-yellow-50",
+      borderColor: "border-yellow-300",
+      levelColor: "bg-yellow-500 text-white"
+    }
+  ];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="page">
+      <header className="header">
+        <div className="header-bar">
+          <div>
+            <h1>CitySignal</h1>
+            <p>내 주변의 위험 신호를 실시간으로 확인하세요</p>
+          </div>
+          <AuthButton />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <main className="container">
+        <CurrentLocation />
+
+        <section className="section">
+          <div className="section-title">
+            <h2>🚨 최근 위험 제보</h2>
+            <span className="count">3건</span>
+          </div>
+
+          {alerts.map((alert) => (
+            <article key={alert.id} className={`card alert ${alert.borderColor}`}>
+              <div className="alert-header">
+                <span className={`level ${alert.levelColor}`}>위험도 {alert.level}단계</span>
+                <span className="emoji">{alert.emoji}</span>
+              </div>
+              <h3 className="title">{alert.title}</h3>
+              <p className="meta">{alert.location}</p>
+              <p className="time">⏱️ {alert.time}</p>
+            </article>
+          ))}
+        </section>
+
+        <div className="actions">
+          <button className="btn primary">📋 모든 제보</button>
+          <button className="btn danger">➕ 신고하기</button>
         </div>
+
+        <section className="card tip">
+          <p><strong>💡 팁:</strong> 앱을 홈 화면에 추가하면 더 빠르게 접속할 수 있습니다!</p>
+        </section>
       </main>
+
+      <BottomNav />
     </div>
   );
 }
