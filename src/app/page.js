@@ -6,6 +6,7 @@ import PushTipsBanner from "@/components/PushTipsBanner";
 import HomeNearby from "@/components/HomeNearby.jsx";
 import HomeQuickTiles from "@/components/HomeQuickTiles.jsx";
 import BottomNav from "@/components/BottomNav.jsx";
+import UserGreeting from "@/components/UserGreeting.jsx";
 
 export default function HomePage() {
   // 홈의 최근 제보는 카드형식으로 실제 데이터 렌더 — HomeNearby 사용
@@ -21,6 +22,8 @@ export default function HomePage() {
           <AuthButton />
         </div>
       </div>
+
+      <UserGreeting />
 
       <main className="container">
         <PushTipsBanner />
