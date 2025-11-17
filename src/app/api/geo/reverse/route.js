@@ -1,3 +1,10 @@
+/**
+ * GET /api/geo/reverse
+ * Reverse geocode lat/lng to a Korean-formatted address and zone keys.
+ * - Primary: Nominatim (ko), with road-name filtering heuristics
+ * - Fallback: Kakao Local (coord2regioncode/coord2address) with nearby sampling
+ * - Query: lat, lng, debug=1 (optional)
+ */
 import { NextResponse } from "next/server";
 
 // Reverse geocode using OpenStreetMap Nominatim (no SDK, rate-limited; fine for dev)

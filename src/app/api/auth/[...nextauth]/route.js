@@ -1,3 +1,8 @@
+/**
+ * NextAuth 라우트 핸들러
+ * 프로바이더: Google, Credentials. 세션: JWT. MongoDB 어댑터(선택).
+ * 렌더링: 서버(Route Handler)
+ */
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";

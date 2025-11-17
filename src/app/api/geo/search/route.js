@@ -1,3 +1,9 @@
+/**
+ * GET /api/geo/search
+ * Nominatim 기반의 지오코딩(주소→좌표) 후, 필요 시 카카오 API로 동/리 보정
+ * Query: q (검색어), debug=1 (선택)
+ * 렌더링: 서버(Route Handler)
+ */
 import { NextResponse } from "next/server";
 import { formatFromNominatim } from "../_utils/format";
 

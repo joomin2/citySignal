@@ -33,7 +33,7 @@ export default function SignupPage() {
     <main className="page">
       <header className="header">
         <h1>회원가입</h1>
-        <Link href="/" className="link">홈으로</Link>
+        <Link href="/" className="btn ghost" style={{ textDecoration: "none" }}>홈으로</Link>
       </header>
 
       <section className="card">
@@ -51,7 +51,7 @@ export default function SignupPage() {
             <label className="label" htmlFor="password">비밀번호</label>
             <input className="input" id="password" name="password" type="password" value={form.password} onChange={onChange} placeholder="8자 이상" required />
           </div>
-          <button className="button" type="submit" disabled={status.state === "loading"}>제출</button>
+          <button className="btn primary" type="submit" disabled={status.state === "loading"}>제출</button>
         </form>
         {status.state === "success" && <p className="success">{status.message}</p>}
         {status.state === "error" && <p className="error">{status.message}</p>}
@@ -59,7 +59,7 @@ export default function SignupPage() {
 
       <section className="card">
         <p className="muted">이미 계정이 있나요?</p>
-        <Link className="button button--ghost" href="/login">이메일로 로그인</Link>
+        <Link className="btn secondary" href="/login">이메일로 로그인</Link>
       </section>
     </main>
   );

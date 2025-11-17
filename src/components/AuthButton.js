@@ -1,23 +1,21 @@
 "use client";
+// 컴포넌트: AuthButton (로그인/로그아웃 버튼)
+// 렌더링: CSR — NextAuth 세션 상태에 의존
 import { useSession, signIn, signOut } from "next-auth/react";
-import Link from "next/link";
 
 export default function AuthButton() {
   const { data: session, status } = useSession();
   const loading = status === "loading";
 
-  if (loading) return <button className="btn" disabled>로딩중…</button>;
+  if (loading) return <button className="btn ghost" disabled>로딩중…</button>;
 
   if (!session) {
     return (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <a className="btn primary" href="/login">로그인 / 회원가입</a>
-        <Link className="btn button--ghost" href="/signup">회원가입</Link>
-      </div>
+      <a className="btn secondary" href="/login">로그인 / 회원가입</a>
     );
   }
 
   return (
-    <button className="btn danger" onClick={() => signOut({ callbackUrl: "/" })}>로그아웃</button>
+    <button className="btn ghost" onClick={() => signOut({ callbackUrl: "/" })}>로그아웃</button>
   );
 }

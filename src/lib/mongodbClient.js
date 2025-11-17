@@ -1,3 +1,5 @@
+// lib/mongodbClient
+// 서버 전용: NextAuth 어댑터용 순수 MongoDB 클라이언트(선택)
 import { MongoClient } from "mongodb";
 
 const uri = process.env.MONGODB_URI;

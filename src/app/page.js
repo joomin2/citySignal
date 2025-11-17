@@ -1,82 +1,40 @@
-import BottomNav from "@/components/BottomNav";
+// 페이지: 홈
+// 렌더링: SSR(서버 컴포넌트) — 클라이언트 컴포넌트(AuthButton, CurrentLocation, PushTipsBanner) 합성
 import AuthButton from "@/components/AuthButton";
 import CurrentLocation from "@/components/CurrentLocation";
+import PushTipsBanner from "@/components/PushTipsBanner";
+import HomeNearby from "@/components/HomeNearby.jsx";
+import HomeQuickTiles from "@/components/HomeQuickTiles.jsx";
+import BottomNav from "@/components/BottomNav.jsx";
 
 export default function HomePage() {
-  const alerts = [
-    {
-      id: 1,
-      level: 4,
-      title: "선문대 근처 수상한 봉고차 목격",
-      location: "선문대학교 정문 근처",
-      time: "5분 전",
-      emoji: "🚐",
-      bgColor: "bg-red-50",
-      borderColor: "border-red-300",
-      levelColor: "bg-red-500 text-white"
-    },
-    {
-      id: 2,
-      level: 2,
-      title: "이상한 사람이 주변 어슬렁거림",
-      location: "학생식당 뒤편",
-      time: "10분 전",
-      emoji: "⚠️",
-      bgColor: "bg-orange-50",
-      borderColor: "border-orange-300",
-      levelColor: "bg-orange-500 text-white"
-    },
-    {
-      id: 3,
-      level: 1,
-      title: "가로등 불이 꺼짐",
-      location: "중앙도서관 앞",
-      time: "15분 전",
-      emoji: "💡",
-      bgColor: "bg-yellow-50",
-      borderColor: "border-yellow-300",
-      levelColor: "bg-yellow-500 text-white"
-    }
-  ];
+  // 홈의 최근 제보는 카드형식으로 실제 데이터 렌더 — HomeNearby 사용
 
   return (
     <div className="page">
-      <header className="header">
-        <div className="header-bar">
+      <div className="sticky top-0 z-40 bg-white/70 dark:bg-zinc-900/70 backdrop-blur border-b border-zinc-200 dark:border-zinc-800">
+        <div className="px-4 py-3 flex items-center justify-between">
           <div>
-            <h1>CitySignal</h1>
-            <p>내 주변의 위험 신호를 실시간으로 확인하세요</p>
+            <h1 className="text-[17px] font-bold">CitySignal</h1>
+            <p className="text-xs text-zinc-500">내 주변 위험을 빠르게</p>
           </div>
           <AuthButton />
         </div>
-      </header>
+      </div>
 
       <main className="container">
+        <PushTipsBanner />
         <CurrentLocation />
 
-        <section className="section">
+        <HomeQuickTiles />
+
+        {/* Nearby */}
+        <section className="section fade-in">
           <div className="section-title">
-            <h2>🚨 최근 위험 제보</h2>
-            <span className="count">3건</span>
+            <h2>주변 위험 제보</h2>
           </div>
-
-          {alerts.map((alert) => (
-            <article key={alert.id} className={`card alert ${alert.borderColor}`}>
-              <div className="alert-header">
-                <span className={`level ${alert.levelColor}`}>위험도 {alert.level}단계</span>
-                <span className="emoji">{alert.emoji}</span>
-              </div>
-              <h3 className="title">{alert.title}</h3>
-              <p className="meta">{alert.location}</p>
-              <p className="time">⏱️ {alert.time}</p>
-            </article>
-          ))}
+          <HomeNearby />
         </section>
-
-        <div className="actions">
-          <button className="btn primary">📋 모든 제보</button>
-          <button className="btn danger">➕ 신고하기</button>
-        </div>
 
         <section className="card tip">
           <p><strong>💡 팁:</strong> 앱을 홈 화면에 추가하면 더 빠르게 접속할 수 있습니다!</p>
