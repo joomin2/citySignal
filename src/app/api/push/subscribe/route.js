@@ -3,6 +3,10 @@
  * 웹 푸시 구독 저장/갱신(선택: 위치/구역/반경 포함)
  * 인증: 필요(NextAuth)
  * 렌더링: 서버(Route Handler)
+ * ----------------------------------------------------
+ * English summary
+ * - Persist or update web push subscription (optional geo/zone/radius)
+ * - Requires auth (NextAuth session)
  */
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";

@@ -36,7 +36,6 @@ export default function AccountPage() {
           <p><strong>이메일:</strong> {session.user?.email}</p>
         </div>
         <ThemeToggle />
-        <TestPush />
         <button className="btn danger" onClick={() => signOut({ callbackUrl: "/" })}>로그아웃</button>
       </div>
       {/* Bottom navigation removed as requested */}
@@ -45,27 +44,3 @@ export default function AccountPage() {
   );
 }
 
-function TestPush() {
-  const [msg, setMsg] = useState("");
-  const [loading, setLoading] = useState(false);
-  const run = async () => {
-    setMsg("");
-    setLoading(true);
-    try {
-      const res = await fetch("/api/push/test", { method: "POST" });
-      const js = await res.json();
-      setMsg(res.ok ? `발송: ${js.results?.length || 0}건` : (js.error || "에러"));
-    } catch (e) {
-      setMsg(e.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  return (
-    <div className="card" style={{ marginTop: 12 }}>
-      <h3>푸시 테스트</h3>
-      <button className="btn" onClick={run} disabled={loading}>{loading ? "발송 중…" : "내 기기로 테스트 발송"}</button>
-      {msg && <p style={{ marginTop: 8 }}>{msg}</p>}
-    </div>
-  );
-}

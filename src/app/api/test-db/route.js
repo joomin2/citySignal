@@ -1,3 +1,5 @@
+// GET /api/test-db : simple DB roundtrip check
+// 한국어: DB 연결 및 간단 질의 동작 확인용 테스트 엔드포인트
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 

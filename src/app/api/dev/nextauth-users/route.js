@@ -1,3 +1,5 @@
+// GET /api/dev/nextauth-users : list NextAuth users (dev only)
+// 한국어: NextAuth로 저장된 사용자 계정 목록 조회(개발 환경 전용)
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodbClient";
 

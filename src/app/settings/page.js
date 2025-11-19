@@ -1,11 +1,11 @@
 "use client";
 import ThemeToggle from "@/components/ThemeToggle";
-import PushControls from "@/components/PushControls.jsx";
 import BottomNav from "@/components/BottomNav.jsx";
+import RangeSettings from "@/components/RangeSettings.jsx";
 
 export default function SettingsPage() {
   return (
-    <div className="page">
+    <div className="page" style={{ paddingBottom: "110px" }}>
       <div className="topbar">
         <div className="bar">
           <h2>설정</h2>
@@ -18,11 +18,7 @@ export default function SettingsPage() {
           <p className="muted">CitySignal · 가까운 위험을 더 빨리</p>
         </section>
         <ThemeToggle />
-        <PushControls />
-        <section className="card" style={{ marginTop: 12 }}>
-          <h3>도움말</h3>
-          <p className="muted">푸시 테스트는 로그인 후 사용할 수 있습니다.</p>
-        </section>
+        <RangeSettings />
       </div>
       <BottomNav />
     </div>

@@ -3,28 +3,30 @@
 // 렌더링: CSR — 지오로케이션 후 /api/signals를 조회하여 카드로 표시
 import { useEffect, useRef, useState } from "react";
 import SignalCard from "@/components/SignalCard.jsx";
+import { useGeolocation } from "@/hooks/useGeolocation";
 
 export default function HomeNearby() {
-  const [coords, setCoords] = useState(null);
+  const { coords, status, error: geoError, getLocation } = useGeolocation({ enableHighAccuracy: true, timeout: 8000 });
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState("");
   const mountedRef = useRef(true);
+  const requestedRef = useRef(false);
 
+  // 위치 요청은 최초 1회만 수행(StrictMode 중복 마운트 방지)
   useEffect(() => {
-    // [기능] 현재 위치 가져오기 (권한 거부/오류 시 로딩 중단)
-    navigator.geolocation?.getCurrentPosition(
-      (pos) => { if (!mountedRef.current) return; setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
-      (e) => { if (!mountedRef.current) return; setErr(e.message || "위치 에러"); setLoading(false); },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
-    return () => { mountedRef.current = false; };
-  }, []);
+    if (requestedRef.current) return;
+    requestedRef.current = true;
+    getLocation();
+  }, [getLocation]);
 
+  // 단일 fetch 보장: 좌표 문자열이 변화할 때만 조회
+  const lastKeyRef = useRef(null);
   useEffect(() => {
     if (!coords) return;
+    const key = `${coords.lat.toFixed(5)},${coords.lng.toFixed(5)}`;
+    if (lastKeyRef.current === key) return; // 동일 좌표면 재요청 방지
+    lastKeyRef.current = key;
     const ac = new AbortController();
-    // [기능] 주변 제보 조회 (상위 3개)
     (async () => {
       try {
         setLoading(true);
@@ -35,7 +37,7 @@ export default function HomeNearby() {
         if (res.ok) setList((js.items || []).slice(0, 3));
       } catch (e) {
         if (!mountedRef.current || e?.name === 'AbortError') return;
-        setErr(e.message || "불러오기 실패");
+        console.error(e);
       } finally {
         if (!mountedRef.current) return;
         setLoading(false);
@@ -62,9 +64,9 @@ export default function HomeNearby() {
     </div>
   );
 
-  if (err) return (
+  if (status === 'error') return (
     <section className="card">
-      <p className="error">{err}</p>
+      <p className="error">{geoError || '위치 에러'}</p>
     </section>
   );
 

@@ -2,12 +2,32 @@
 // 서버 전용 헬퍼: 텍스트에서 1–5단계 위험도를 추론(OpenAI 사용 가능 시),
 // 미사용 시 한국어 키워드 기반 휴리스틱으로 대체합니다.
 
+const g = globalThis;
+g._aiCache = g._aiCache || new Map(); // key -> { value, ts }
+const CACHE_TTL_MS = 60_000; // 1분 캐시
+
 export async function inferSeverityFromText(text) {
   const apiKey = process.env.OPENAI_API_KEY;
-  const safeDefault = heuristicSeverity5(text);
+  const input = String(text || '').slice(0, 2000);
+  const safeDefault = heuristicSeverity5(input);
   if (!apiKey) return safeDefault;
 
+  // 캐시 조회
+  const now = Date.now();
+  const prev = g._aiCache.get(input);
+  if (prev && (now - prev.ts) < CACHE_TTL_MS) {
+    return prev.value;
+  }
+
+  // 타임아웃 설정
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 4000);
+
   try {
+    const start = Date.now();
+    if (process.env.AI_LOG === '1') {
+      console.log('[AI] OpenAI request start', { len: input.length });
+    }
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -15,26 +35,42 @@ export async function inferSeverityFromText(text) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-5.1",
         messages: [
           {
             role: "system",
-            content:
-              "You are a safety triage classifier. Return only one of: 1, 2, 3, 4, 5.\n1=info, 2=caution, 3=watch, 4=danger, 5=critical. Consider imminent threat to life, weapons, active violence, fire/explosion, gas leak, structural collapse, kidnapping/sexual assault, multi-vehicle crash. Short text only: a single digit with no explanation.",
+            content: "You are a safety triage classifier. Return only one of: 1, 2, 3, 4, 5.\n1=info, 2=caution, 3=watch, 4=danger, 5=critical. Consider imminent threat to life, weapons, active violence, fire/explosion, gas leak, structural collapse, kidnapping/sexual assault, multi-vehicle crash. Short text only: a single digit with no explanation.",
           },
-          { role: "user", content: String(text).slice(0, 2000) },
+          { role: "user", content: input },
         ],
         temperature: 0,
         max_tokens: 3,
       }),
+      signal: controller.signal,
     });
-    if (!res.ok) return safeDefault;
+    clearTimeout(timeout);
+    if (!res.ok) {
+      g._aiCache.set(input, { value: safeDefault, ts: now });
+      if (process.env.AI_LOG === '1') {
+        console.log('[AI] OpenAI non-OK response, fallback', { status: res.status });
+      }
+      return safeDefault;
+    }
     const json = await res.json();
-    const out = (json?.choices?.[0]?.message?.content || "").trim();
+    const out = (json?.choices?.[0]?.message?.content || '').trim();
     const n = parseInt(out, 10);
-    if (Number.isInteger(n) && n >= 1 && n <= 5) return n;
-    return safeDefault;
-  } catch {
+    const val = (Number.isInteger(n) && n >= 1 && n <= 5) ? n : safeDefault;
+    g._aiCache.set(input, { value: val, ts: Date.now() });
+    if (process.env.AI_LOG === '1') {
+      console.log('[AI] OpenAI success', { latencyMs: Date.now() - start, raw: out, parsed: val });
+    }
+    return val;
+  } catch (e) {
+    clearTimeout(timeout);
+    g._aiCache.set(input, { value: safeDefault, ts: now });
+    if (process.env.AI_LOG === '1') {
+      console.log('[AI] OpenAI error, fallback', { error: e?.message });
+    }
     return safeDefault;
   }
 }

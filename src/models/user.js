@@ -1,7 +1,7 @@
 import mongoose, { Schema, models } from "mongoose";
 
-// App-level user profile schema (separate from NextAuth's internal `users` collection)
-// Links to NextAuth user via `authUserId`.
+// 앱 레벨 사용자 프로필 스키마 (NextAuth 내부 `users` 컬렉션과 분리)
+// `authUserId`를 통해 NextAuth 사용자와 연결됩니다.
 const UserSchema = new Schema(
   {
     authUserId: { type: Schema.Types.ObjectId, ref: "users", index: true },
@@ -11,7 +11,7 @@ const UserSchema = new Schema(
     image: { type: String },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     phone: { type: String },
-    // Add any custom fields for your app here
+    // 필요한 추가 사용자 필드를 여기에 확장하세요
   },
   { timestamps: true, collection: "users_app" }
 );

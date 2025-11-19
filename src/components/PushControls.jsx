@@ -1,5 +1,8 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+// 푸시 제어 UI: 구독 상태/권한 확인 및 안내
+// English: minimal UI for push permission and subscription status
+import RadiusDial from "./RadiusDial.jsx";
 
 export default function PushControls() {
   const [supported, setSupported] = useState({ sw: false, push: false });
@@ -120,8 +123,7 @@ export default function PushControls() {
           <span className="chip">…{endpointTail}</span>
         </div>}
         <div style={{ marginTop: 4 }}>
-          <label className="label">반경: {radiusKm}km</label>
-          <input type="range" min="0.5" max="10" step="0.5" value={radiusKm} onChange={(e)=>onUpdateRadius(Number(e.target.value))} style={{ width:'100%' }} />
+          <RadiusDial value={radiusKm} onChange={(v)=>onUpdateRadius(v)} min={0.5} max={10} step={0.5} />
         </div>
         <div style={{ display:'flex', gap:8, marginTop: 6 }}>
           {!subscribed ? (

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-
-// Deprecated endpoint: voting is disabled in simplified model
+// 투표 기능 비활성화: 엔드포인트 제거
 export async function POST() {
-  return NextResponse.json({ error: "vote endpoint deprecated" }, { status: 410 });
+  return NextResponse.json({ error: "vote disabled" }, { status: 410 });
 }

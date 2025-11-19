@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "env": {
+    "NEXTAUTH_URL": "https://your-production-domain.vercel.app"
+  },
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {"key": "Cache-Control", "value": "public, max-age=0, must-revalidate"}
+      ]
+    }
+  ],
+  "rewrites": [
+    {"source": "/manifest.json", "destination": "/manifest.json"}
+  ]
+}

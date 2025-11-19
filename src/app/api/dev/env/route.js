@@ -1,3 +1,5 @@
+// GET /api/dev/env : expose selected runtime env keys (dev only)
+// 한국어: 개발 모드에서 노출 허용된 환경변수 key/value 조회(민감 값 제외)
 import { NextResponse } from "next/server";
 
 // Dev-only: check if an env var is loaded (does not reveal full value)

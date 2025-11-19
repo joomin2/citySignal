@@ -9,7 +9,7 @@ import { formatFromNominatim } from "../_utils/format";
 
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.url);
+// GET /api/geo/search : forward geocoding (text -> geo candidates)
     const q = searchParams.get("q");
     const debug = searchParams.get("debug");
     if (!q) return NextResponse.json({ error: "q 필요" }, { status: 400 });

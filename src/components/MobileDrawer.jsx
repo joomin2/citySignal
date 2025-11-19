@@ -1,5 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
+// 모바일 드로어: 작은 화면에서 부가 메뉴/필터 표시
+// English: sliding drawer for secondary navigation/filter controls
 import Link from "next/link";
 import { House, PlusCircle, ListBullets, MapTrifold, GearSix, X, List } from "phosphor-react";
 

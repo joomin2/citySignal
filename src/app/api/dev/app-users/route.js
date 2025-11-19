@@ -1,3 +1,5 @@
+// GET /api/dev/app-users : list application users (dev only)
+// 한국어: 애플리케이션 등록 사용자 목록 조회(개발 환경 전용)
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import AppUser from "@/models/user";

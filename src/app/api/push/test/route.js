@@ -9,7 +9,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { connectDB } from "@/lib/mongodb";
 import PushSubscription from "@/models/subscription";
-import { sendPush } from "@/lib/webpush";
+// POST /api/push/test : send a test push notification to active subscriptions
+// 한국어: 활성화된 구독 대상으로 테스트 푸시 알림 발송
 
 export async function POST(req) {
   try {

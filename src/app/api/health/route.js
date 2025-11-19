@@ -2,6 +2,10 @@
  * /api/health
  * GET — Basic healthcheck for app and DB
  * - Returns service status, DB ping time, and counts snapshot
+ * -----------------------------------------------------------
+ * 한국어 요약
+ * - 애플리케이션 및 DB 기본 상태 확인용
+ * - 서비스 정상 여부(ok), DB 응답 시간(dbMs), 문서 수(counts) 등 반환
  */
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";

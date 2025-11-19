@@ -11,6 +11,10 @@ export default function SignalDetailPage() {
   const id = params?.id;
   const [sig, setSig] = useState(null);
   const [msg, setMsg] = useState("");
+  const [comments, setComments] = useState([]);
+  const [cText, setCText] = useState("");
+  const [cSending, setCSending] = useState(false);
+  const maxLen = 1000;
 
   useEffect(() => {
     if (!id) return;
@@ -21,10 +25,35 @@ export default function SignalDetailPage() {
       // 호환: {items:[...]} 또는 {item:{...}} 모두 지원
       const item = Array.isArray(sl.items) ? sl.items[0] : sl.item;
       setSig(item || null);
+      // 댓글 불러오기
+      try {
+        const cres = await fetch(`/api/signals/${id}/comments`);
+        const cj = await cres.json();
+        if (cj?.items) setComments(cj.items);
+      } catch {}
     })();
   }, [id]);
 
   const vote = async () => setMsg("추천 기능은 비활성화됨");
+
+  const submitComment = async () => {
+    if (!cText.trim()) return;
+    setCSending(true);
+    try {
+      const res = await fetch(`/api/signals/${id}/comments`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ content: cText }) });
+      const js = await res.json();
+      if (res.ok && js?.item) {
+        setComments([js.item, ...comments]);
+        setCText("");
+      } else {
+        alert(js.error || '댓글 등록 실패');
+      }
+    } catch (e) {
+      alert('댓글 등록 오류');
+    } finally {
+      setCSending(false);
+    }
+  };
 
   if (!sig) return (
     <div className="page">
@@ -99,13 +128,51 @@ export default function SignalDetailPage() {
           </div>
         </div>
 
-        {/* 상세 설명 카드 */}
+        {/* 상세 설명 + 이미지 갤러리 (모든 img:) */}
         <section className="card">
-          <p>{sig.description || "설명 없음"}</p>
+          <p style={{ whiteSpace:'pre-line', lineHeight:'1.5' }}>{sig.description || "설명 없음"}</p>
+          {Array.isArray(sig.tags) && sig.tags.filter(t=>t.startsWith('img:')).length > 0 && (
+            <div className="mt-4 grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(140px,1fr))' }}>
+              {sig.tags.filter(t=>t.startsWith('img:')).slice(0,6).map((tag,i)=> {
+                const url = tag.slice(4);
+                return (
+                  <div key={tag+i} className="rounded-md overflow-hidden">
+                    <img src={url} alt={sig.title + ' 이미지 ' + (i+1)} loading="lazy" style={{ width:'100%', height:120, objectFit:'cover', display:'block' }} />
+                  </div>
+                );
+              })}
+            </div>
+          )}
           {msg && <>
             <div className="divider" />
             <p className="error">{msg}</p>
           </>}
+        </section>
+
+        {/* 댓글 섹션 */}
+        <section className="card" style={{ marginTop:12 }}>
+          <h3 style={{ fontSize:14, fontWeight:600, marginBottom:8 }}>댓글</h3>
+          <div className="flex gap-2 mb-2">
+            <textarea
+              value={cText}
+              onChange={e=>setCText(e.target.value)}
+              placeholder="의견을 남겨주세요"
+              rows={2}
+              style={{ flex:1, resize:'vertical' }}
+              maxLength={maxLen}
+            />
+            <button disabled={cSending || !cText.trim()} onClick={submitComment} className="btn" style={{ alignSelf:'flex-start' }}>{cSending? '등록중…':'등록'}</button>
+          </div>
+          <div className="mb-3" style={{ textAlign:'right', fontSize:12, opacity:.6 }}>{cText.length}/{maxLen}</div>
+          {comments.length === 0 && <p className="text-sm" style={{ opacity:.7 }}>아직 댓글이 없습니다.</p>}
+          <ul className="space-y-3" style={{ listStyle:'none', padding:0, margin:0 }}>
+            {comments.map(c => (
+              <li key={c._id} className="rounded-md bg-zinc-50 dark:bg-zinc-800/50 p-2 border border-zinc-200 dark:border-zinc-700">
+                <div style={{ fontSize:12, opacity:.6 }}>{new Date(c.createdAt).toLocaleString()}</div>
+                <div style={{ marginTop:4, fontSize:13, lineHeight:'1.3' }}>{c.content}</div>
+              </li>
+            ))}
+          </ul>
         </section>
       </div>
       <BottomNav />

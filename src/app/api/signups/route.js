@@ -1,3 +1,5 @@
+// POST /api/signups : anonymous email capture (pre-registration interest)
+// 한국어: 익명 관심 등록(향후 가입 알림용 이메일 수집)
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodbClient";
 

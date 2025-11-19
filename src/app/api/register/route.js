@@ -1,3 +1,5 @@
+// POST /api/register : create user account (email/password basic flow)
+// 한국어: 이메일/패스워드 기반 신규 사용자 등록
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import AppUser from "@/models/user";

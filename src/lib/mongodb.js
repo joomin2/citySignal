@@ -2,7 +2,7 @@
 // 서버 전용: MongoDB Atlas에 대한 단일 Mongoose 연결 공유
 import mongoose from 'mongoose';
 
-// 전역 캐시(개발 핫리로드/라우트 핸들러 재실행 시 중복 연결 방지)
+// 전역 캐시 (개발 핫리로드 / 라우트 핸들러 재실행 시 중복 연결 방지)
 const g = globalThis;
 g._mongoose = g._mongoose || { conn: null, promise: null };
 

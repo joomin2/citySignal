@@ -13,6 +13,7 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const lat = searchParams.get("lat");
     const lng = searchParams.get("lng");
+// GET /api/geo/reverse : reverse geocoding (lat,lng -> address)
     const debug = searchParams.get("debug");
     if (!lat || !lng) {
       return NextResponse.json({ error: "lat,lng 필요" }, { status: 400 });

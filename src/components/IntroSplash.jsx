@@ -1,4 +1,6 @@
 "use client";
+// 초기 인트로 스플래시: 앱 소개 및 간단 CTA
+// English: intro splash section with brief description and CTA
 import { useEffect, useState } from "react";
 
 export default function IntroSplash() {
@@ -34,12 +36,13 @@ export default function IntroSplash() {
       <button className="intro-skip" onClick={close} aria-label="Skip intro">건너뛰기</button>
       <div className="intro-box" onClick={close}>
         <div className="intro-logo" aria-hidden>
+          <div className="ring" />
           <div className="dot dot-a" />
           <div className="dot dot-b" />
           <div className="pulse" />
         </div>
-        <div className="intro-title">CitySignal</div>
-        <div className="intro-sub">가까운 위험을 더 빨리</div>
+        <div className="intro-title" style={{ fontWeight:900 }}>CitySignal</div>
+        <div className="intro-sub" style={{ fontWeight:600 }}>가까운 위험을 더 빨리</div>
       </div>
     </div>
   );
