@@ -31,7 +31,7 @@ const SubscriptionSchema = new Schema(
 );
 
 SubscriptionSchema.index({ userId: 1, endpoint: 1 });
-SubscriptionSchema.index({ active: 1 });
+// active 필드는 스키마 필드 정의에 index:true가 있어 별도 선언을 제거하여 중복 인덱스 경고 방지
 SubscriptionSchema.index({ geo: "2dsphere" });
 
 export default models.PushSubscription || mongoose.model("PushSubscription", SubscriptionSchema);

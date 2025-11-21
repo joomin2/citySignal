@@ -11,7 +11,7 @@ export default function SignalsListPage() {
   const [err, setErr] = useState("");
   // Dev/test creation states removed for presentation mode
   const [page, setPage] = useState(1);
-  const [sort, setSort] = useState('latest'); // latest | severity | mixed | distance | sev_distance | recommended
+  const [sort, setSort] = useState('latest'); // latest | severity | distance | recommended
   // 기본을 '전체 보기'로 두어 시드 데이터/글로벌 목록을 바로 노출
   const [nearOnly, setNearOnly] = useState(false);
   const [hasNext, setHasNext] = useState(false);
@@ -100,10 +100,8 @@ export default function SignalsListPage() {
           <div className="seg" role="tablist" aria-label="정렬" style={{ display:'flex', flexWrap:'wrap' }}>
             <button className={`seg-btn ${sort==='latest' ? 'active' : ''}`} role="tab" aria-selected={sort==='latest'} onClick={()=>setSort('latest')}>최신순</button>
             <button className={`seg-btn ${sort==='severity' ? 'active' : ''}`} role="tab" aria-selected={sort==='severity'} onClick={()=>setSort('severity')}>위험도순</button>
-            <button className={`seg-btn ${sort==='mixed' ? 'active' : ''}`} role="tab" aria-selected={sort==='mixed'} onClick={()=>setSort('mixed')}>혼합(위험·최신)</button>
             <button className={`seg-btn ${sort==='distance' ? 'active' : ''}`} role="tab" aria-selected={sort==='distance'} onClick={()=>setSort('distance')} disabled={!coords}>거리순</button>
             <button className={`seg-btn ${sort==='recommended' ? 'active' : ''}`} role="tab" aria-selected={sort==='recommended'} onClick={()=>setSort('recommended')}>추천순</button>
-            <button className={`seg-btn ${sort==='sev_distance' ? 'active' : ''}`} role="tab" aria-selected={sort==='sev_distance'} onClick={()=>setSort('sev_distance')} disabled={!coords}>위험도+거리</button>
           </div>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
             <label style={{ display:'flex', alignItems:'center', gap:8, fontWeight:600 }}>

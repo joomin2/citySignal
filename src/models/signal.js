@@ -31,8 +31,8 @@ const SignalSchema = new Schema(
       sub: { type: String, index: true },
     },
     // 커뮤니티 상호작용 관련 필드
-    score: { type: Number, default: 0, index: true },
-    // votes 필드 제거 (투표 비활성화)
+    score: { type: Number, default: 0, index: true }, // AI/추천 기반 점수
+    recommendCount: { type: Number, default: 0, index: true }, // 추천수
     tags: [{ type: String, trim: true, index: true }],
     status: { type: String, enum: ["active", "resolved"], default: "active", index: true },
     // 출처: 사용자(user) / 시드(seed) / AI(ai)

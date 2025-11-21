@@ -17,27 +17,47 @@ function normalizeLevel(v) {
 }
 
 export default function SignalCard({ signal }) {
+    function handleRecommend(e) {
+      e.stopPropagation();
+      alert("추천 기능은 준비 중입니다.");
+    }
   const lvl = normalizeLevel(signal?.level);
   const source = signal?.source || 'user';
-  const badgeClass = lvl >= 5
-    ? 'level-extreme'
-    : lvl >= 4
-      ? 'level-high'
-      : lvl === 3
-        ? 'level-medium'
-        : lvl === 2
-          ? 'level-low'
-          : 'level-info';
+  const badgeClass = `level-${lvl}`;
   const title = signal?.title || signal?.location?.address || '신호';
   const href = `/signals/${signal?._id}`;
   const dist = typeof signal?.dist === 'number' ? signal.dist : null;
   const distLabel = dist == null ? null : (dist >= 1000 ? `${(dist / 1000).toFixed(dist >= 9500 ? 0 : 1)}km` : `${Math.round(dist)}m`);
   const sourceLabel = source === 'seed' ? 'Seed' : source === 'ai' ? 'AI' : 'User';
-  // Collect all image tags (img:URL). Limit to 3 for layout.
   const imgTags = Array.isArray(signal.tags)
     ? signal.tags.filter(t => typeof t === 'string' && t.startsWith('img:')).slice(0, 3)
     : [];
   const hasGallery = imgTags.length > 0;
+  // 작성자 이름 마스킹
+  function maskName(name, email) {
+    if (name && typeof name === 'string' && name.trim()) {
+      const n = name.trim();
+      return n.length > 1 ? n[0] + '**' : n[0] + '**';
+    }
+    // 이메일 마스킹: joominuniv@gmail.com → j**
+    if (email && typeof email === 'string') {
+      const id = email.split('@')[0];
+      return id.length > 1 ? id[0] + '**' : id[0] + '**';
+    }
+    return 'U**';
+  }
+  // signal.name: 닉네임, signal.email: 이메일
+  const author = maskName(signal.name, signal.email);
+  // 주소 + 동(읍/면/동/리) 표시
+    // 주소 포맷: 시 면 리 (우편번호)
+    let address = signal?.location?.address || '';
+    let postal = '';
+    // 주소에서 우편번호 추출 (예: '아산시 매곡리 (31464)')
+    if (address && address.match(/\(\d{5}\)/)) {
+      postal = address.match(/\((\d{5})\)/)[1];
+      address = address.replace(/\s*\(\d{5}\)/, '');
+    }
+    // zone/sub 정보 별도 칩으로 표시
   return (
     <article className={`card signal-card level-${lvl}`}>
       <div className="title-row">
@@ -45,10 +65,15 @@ export default function SignalCard({ signal }) {
         <div className="flex items-center gap-2">
           <span className={`badge risk ${badgeClass}`}>{`위험도 ${lvl}단계`}</span>
           <span className={`badge source source-${source}`}>{sourceLabel}</span>
+          {/* 작성자 이름 표시 */}
+          <span className="badge author" style={{ background:'#eee', color:'#555', fontWeight:500 }}>{author}</span>
         </div>
       </div>
-      <div className="meta">
-        <span className="chip">{signal?.location?.address || '위치 정보'}</span>
+      <div className="meta" style={{marginTop:8}}>
+        <span className="chip" style={{marginLeft:4}}>{address || '위치 정보'}</span>
+        {postal && <span className="chip chip-strong">{postal}</span>}
+        {signal?.zone?.key && <span className="badge level-2">{signal.zone.key}</span>}
+        {signal?.zone?.sub && <span className="badge level-2">{signal.zone.sub}</span>}
         {distLabel && <span className="chip chip-strong">{distLabel}</span>}
         {hasGallery && (
           <div className={`mt-2 grid gap-2 ${imgTags.length === 1 ? '' : 'grid-cols-2'}`}>

@@ -30,7 +30,15 @@ export async function POST(req, { params }) {
     const { content } = await req.json();
     if (!content || !content.trim()) return NextResponse.json({ error: "content 필요" }, { status: 400 });
     if (content.length > 1000) return NextResponse.json({ error: "최대 1000자" }, { status: 400 });
-    const doc = await Comment.create({ signalId, userId: session.user.id, content: content.trim() });
+    let userId = session.user.id;
+    // userId가 AppUser의 _id와 일치하지 않을 경우 email로 찾아서 보완
+    if (!userId) {
+      const AppUser = (await import('@/models/user')).default;
+      const appUser = await AppUser.findOne({ email: session.user.email }).lean();
+      if (appUser) userId = appUser._id;
+    }
+    if (!userId) return NextResponse.json({ error: "userId 필요" }, { status: 400 });
+    const doc = await Comment.create({ signalId, userId, content: content.trim() });
     return NextResponse.json({ ok: true, id: String(doc._id), item: { _id: doc._id, content: doc.content, userId: doc.userId, createdAt: doc.createdAt } }, { status: 201 });
   } catch (err) {
     return NextResponse.json({ error: err.message || "server error" }, { status: 500 });

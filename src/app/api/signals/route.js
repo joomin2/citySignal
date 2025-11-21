@@ -93,7 +93,7 @@ export async function GET(req) {
         { $sort: sort === 'sev_distance' ? { level: -1, dist: 1, createdAt: -1, _id: -1 } : { dist: 1, createdAt: -1, _id: -1 } },
         { $skip: skip },
         { $limit: pageSize + 1 },
-        { $project: { title: 1, description: 1, level: 1, location: 1, geo: 1, createdAt: 1, zone: 1, dist: 1, source: 1 } },
+        { $project: { title: 1, description: 1, level: 1, location: 1, geo: 1, createdAt: 1, zone: 1, dist: 1, source: 1, recommendCount: 1 } },
       ];
       const agg = await Signal.aggregate(pipeline);
       const hasMore = agg.length > pageSize;
@@ -217,9 +217,9 @@ export async function GET(req) {
       const skip = (page - 1) * (pageSize || limit);
       const pageLimit = pageSize || limit;
       // sortSpec override for recommended
-      const effectiveSort = sort === 'recommended' ? { score: -1, createdAt: -1, _id: -1 } : sortSpec;
+      const effectiveSort = sort === 'recommended' ? { recommendCount: -1, createdAt: -1, _id: -1 } : sortSpec;
       const list = await Signal.find({ ...base })
-        .select("title description level location geo createdAt zone source score")
+        .select("title description level location geo createdAt zone source score recommendCount")
         .sort(effectiveSort)
         .skip(skip)
         .limit(pageLimit + 1)
@@ -228,7 +228,7 @@ export async function GET(req) {
       items = list.slice(0, pageLimit);
     } else {
       const list = await Signal.find({ ...base, ...cursorFilter })
-        .select("title description level location geo createdAt zone source score")
+        .select("title description level location geo createdAt zone source score recommendCount")
         .sort(sortSpec)
         .limit(limit + 1)
         .lean();

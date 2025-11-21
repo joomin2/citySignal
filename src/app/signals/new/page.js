@@ -1,7 +1,9 @@
 "use client";
 // 페이지: 위험 정보 등록
 // 렌더링: CSR — 폼 입력과 위치 자동입력(지오로케이션)
+
 import { useEffect, useState, useCallback } from "react";
+import BottomNav from "@/components/BottomNav";
 
 export default function NewSignalPage() {
   const [title, setTitle] = useState("");
@@ -9,6 +11,9 @@ export default function NewSignalPage() {
   const [category, setCategory] = useState("road");
   const [tags, setTags] = useState([]); // includes optional img: URL
   const [imgUrl, setImgUrl] = useState("");
+  const [imgFile, setImgFile] = useState(null);
+  const [imgUploading, setImgUploading] = useState(false);
+  const [imgError, setImgError] = useState("");
   const [severityPreview, setSeverityPreview] = useState(null);
   const [sevLoading, setSevLoading] = useState(false);
   const [lat, setLat] = useState("");
@@ -29,8 +34,12 @@ export default function NewSignalPage() {
       body: JSON.stringify({ title, description, category, lat: Number(lat), lng: Number(lng), address, zone: { key: zoneKey, sub: zoneSub }, tags }),
     });
     const js = await res.json();
-    if (res.ok) setMsg("등록되었습니다: " + js.id);
-    else setMsg(js.error || "에러");
+    if (res.ok) {
+      window.alert("등록이 완료되었습니다!");
+      window.location.href = "/";
+    } else {
+      setMsg(js.error || "에러");
+    }
   };
 
   // AI severity preview (debounced)
@@ -58,6 +67,32 @@ export default function NewSignalPage() {
       return [...rest, `img:${imgUrl.trim()}`];
     });
   }, [imgUrl]);
+
+  // Handle file upload
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImgUploading(true);
+    setImgError("");
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const res = await fetch("/api/signals/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const js = await res.json();
+      if (res.ok && js.url) {
+        setImgUrl(js.url);
+        setImgFile(file);
+      } else {
+        setImgError(js.error || "이미지 업로드 실패");
+      }
+    } catch (err) {
+      setImgError("이미지 업로드 중 오류 발생");
+    }
+    setImgUploading(false);
+  };
 
   // Auto geolocation + reverse geocode on mount
   useEffect(() => {
@@ -123,9 +158,11 @@ export default function NewSignalPage() {
             </div>
           </div>
           <div>
-            <label className="label">이미지 URL (선택)</label>
-            <input className="input" placeholder="https://images.unsplash.com/..." value={imgUrl} onChange={e=>setImgUrl(e.target.value)} />
-            {imgUrl.trim() && <div style={{ marginTop:8 }}>
+            <label className="label">이미지 첨부 (선택)</label>
+            <input type="file" accept="image/*" onChange={handleFileChange} disabled={imgUploading} />
+            {imgUploading && <div className="chip" style={{marginTop:8}}>업로드 중…</div>}
+            {imgError && <div className="error" style={{marginTop:8}}>{imgError}</div>}
+            {imgUrl.trim() && !imgError && <div style={{ marginTop:8 }}>
               <img src={imgUrl} alt="미리보기" style={{ width:'100%', maxHeight:220, objectFit:'cover', borderRadius:8, border:'1px solid var(--border)' }} loading="lazy" />
             </div>}
           </div>
@@ -169,7 +206,7 @@ export default function NewSignalPage() {
             </div>
           )}
           <div style={{ display:'flex', gap:12, flexDirection:'column', marginTop:4 }}>
-            <button className="btn primary" type="submit">등록</button>
+            <button className="btn primary" type="submit" disabled={imgUploading}> {imgUploading ? "이미지 업로드 중…" : "등록"} </button>
             {severityPreview != null && <div className="text-xs" style={{ opacity:.65 }}>AI 추론 위험도는 참고용이며 실제 저장 값은 사용자가 입력한 텍스트를 기반으로 서버에서 다시 계산될 수 있습니다.</div>}
           </div>
         </form>

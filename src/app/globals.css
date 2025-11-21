@@ -1,5 +1,6 @@
-/* Nunito font must come before all other rules */
+
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap');
+.level-highest { background: linear-gradient(135deg,#dc2626,#b91c1c); color:#fff; }
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
